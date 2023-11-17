@@ -9,7 +9,7 @@ app = Flask(__name__)
 def display_json():
     try:
         # Get the current date in the format "month/day/year"
-        current_date = datetime.now().strftime("%m/%d/%Y")
+        current_date = datetime.now().strftime("%m-%d-%Y")
 
         # Construct the JSON file path with the date
         json_filename = f"data/combined_players_data_{current_date}.json"
