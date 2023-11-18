@@ -1,0 +1,573 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>NBA Player Statistics</title>
+    <style>
+      :root {
+        --background-color: #f4f4f4;
+        --text-color: #333;
+        --container-bg-color: #fff;
+        --primary-color: #007bff;
+        --table-bg-color: #fafafa;
+        --border-color: #ddd;
+        --dnp-bg-color: #ffcccb;
+        --dnp-text-color: #333;
+      }
+
+      [data-theme="dark"] {
+        --background-color: #121212;
+        --text-color: #ddd; /* Lighter text color for better contrast */
+        --container-bg-color: #1f1f1f;
+        --primary-color: #3b82f6; /* Subdued blue for primary elements */
+        --table-bg-color: #2a2a2a;
+        --border-color: #555; /* Lighter border for subtle contrast */
+        --dnp-bg-color: #643434;
+        --dnp-text-color: #fff;
+      }
+
+      body {
+        font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+        background-color: var(--background-color);
+        margin: 0;
+        padding: 0;
+        color: var(--text-color);
+        transition: background-color 0.3s, color 0.3s;
+      }
+
+      .container {
+        max-width: 1600px;
+        margin: 0 auto;
+        padding: 20px;
+        background-color: var(--container-bg-color);
+        border-radius: 8px;
+        box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+        transition: background-color 0.3s;
+      }
+
+      h1 {
+        color: var(--primary-color);
+        text-align: center;
+        padding-bottom: 20px;
+      }
+
+      .table {
+        width: 100%;
+        border-collapse: collapse;
+        margin-top: 20px;
+        box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1); /* Shadow for each table */
+      }
+
+      .table th,
+      .table td {
+        border: 1px solid var(--border-color);
+        padding: 12px;
+        text-align: left;
+        background-color: var(--table-bg-color);
+        color: var(--text-color);
+        transition: background-color 0.3s, color 0.3s, border-color 0.3s;
+      }
+
+      .table th {
+        background-color: var(--primary-color);
+        color: var(--container-bg-color);
+      }
+
+      .table .dnp td {
+        background-color: var(--dnp-bg-color);
+        color: var(--dnp-text-color);
+      }
+
+      .table td.date {
+        font-size: 14px;
+      }
+
+      select {
+        padding: 10px;
+        border: 1px solid #ddd; /* Light border color */
+        border-radius: 4px;
+        width: 100%;
+        margin-top: 10px;
+        background-color: #fff;
+        box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1); /* Shadow for dropdowns */
+      }
+
+      .clickable {
+        cursor: pointer;
+        color: #007bff; /* Modern blue for clickable items */
+        text-decoration: none; /* No underline for a cleaner look */
+        transition: color 0.3s; /* Smooth transition for hover effect */
+      }
+
+      .clickable:hover {
+        color: #0056b3; /* Darker blue on hover */
+      }
+
+      .hidden {
+        display: none;
+      }
+
+      /* Highlight rows for players who did not play */
+      .table .dnp td {
+        background-color: #ffcccb; /* Soft red */
+        color: #333;
+      }
+
+      /* Style adjustments for smaller screens */
+      @media screen and (max-width: 768px) {
+        .container {
+          padding: 10px;
+          box-shadow: none;
+        }
+
+        h1 {
+          font-size: 1.5em; /* Smaller font size for headings */
+        }
+
+        .table {
+          box-shadow: none;
+          border: 0;
+          overflow-x: auto; /* Horizontal scrolling for tables */
+        }
+
+        .table th,
+        .table td {
+          padding: 8px; /* Smaller padding in table cells */
+          font-size: 0.9em; /* Smaller font size for table data */
+        }
+
+        select {
+          padding: 8px;
+          font-size: 0.9em;
+        }
+
+        #showAllPlayersStats,
+        .theme-toggle {
+          font-size: 0.8em; /* Smaller buttons */
+          padding: 8px;
+          width: 50px;
+          height: 50px;
+        }
+
+        .theme-toggle {
+          bottom: 10px;
+          right: 10px;
+        }
+        .table-responsive {
+            overflow-x: auto;
+          }
+      }
+      @media only screen and (max-width: 600px) {
+        /* Adjust styles for containers, tables, and other elements */
+        .table-responsive {
+            overflow-x: auto;
+          }
+        .container {
+          width: 100%;
+          margin: 0;
+          padding: 5px;
+          box-shadow: none;
+        }
+
+        h1 {
+          font-size: 1.2em; /* Smaller font size */
+        }
+
+        .table {
+          /* Styles to ensure table is readable on small screens */
+          display: block;
+          overflow-x: auto;
+        }
+
+        .table th,
+        .table td {
+          padding: 10px; /* Smaller padding */
+        }
+
+        /* Styles for form elements */
+        select {
+          margin-top: 5px;
+          padding: 8px;
+        }
+
+        /* Adjust button sizes */
+        .theme-toggle,
+        #showAllPlayersStats {
+          width: 40px;
+          height: 40px;
+          font-size: 18px;
+        }
+
+        /* Hide elements or adjust for smaller screens */
+        .hidden,
+        .clickable {
+          display: block;
+          margin-bottom: 10px;
+        }
+      }
+      /* Highlight rows for players who did not play */
+      .table .dnp td {
+        background-color: #ffcccb; /* Soft red */
+        color: #333;
+      }
+      .theme-toggle {
+        position: fixed;
+        bottom: 20px;
+        right: 20px;
+        background: var(--primary-color);
+        border: none;
+        border-radius: 30px;
+        width: 60px;
+        height: 60px;
+        cursor: pointer;
+        box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+        color: var(--container-bg-color);
+        font-size: 24px;
+        outline: none;
+        transition: background-color 0.3s, color 0.3s;
+      }
+      #showAllPlayersStats {
+        padding: 10px 20px;
+        background-color: var(--primary-color);
+        color: var(--container-bg-color);
+        border: none;
+        border-radius: 4px;
+        cursor: pointer;
+        font-weight: bold;
+        margin-top: 20px;
+        box-shadow: 0 2px 5px rgba(0, 0, 0, 0.3);
+        transition: background-color 0.3s, color 0.3s;
+      }
+
+      #showAllPlayersStats:hover {
+        background-color: darken(var(--primary-color), 10%);
+        color: var(--dnp-text-color);
+      }
+    </style>
+  </head>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <body data-theme="light">
+    <button class="theme-toggle" onclick="toggleTheme()">☀️</button>
+    <div class="container">
+      <h1>NBA Player Statistics Dashboard</h1>
+
+      <!-- Dropdown for Team Filter -->
+      <select id="teamFilter">
+        <option value="" selected>All Teams</option>
+        <!-- Team options will be inserted dynamically -->
+      </select>
+
+      <select id="opponentFilter">
+        <option value="" selected>Select Opponent</option>
+        <!-- Opponent options will be inserted dynamically -->
+      </select>
+
+      <!-- Collapsible Section for Players by Team -->
+      <h2 class="clickable" onclick="toggleVisibility('playersSection')">
+        Toggle Players Visibility
+      </h2>
+      <div id="playersSection">
+        <table id="playersByTeamTable" class="table">
+          <thead>
+            <tr>
+              <th>Team</th>
+              <th>Player</th>
+            </tr>
+          </thead>
+          <tbody>
+            <!-- Player data will be inserted dynamically -->
+          </tbody>
+        </table>
+      </div>
+
+      <!-- Table for Displaying Game Log Summary of a Selected Player -->
+      <h2 id="gamelogtabletitle-container">Game Log Summary:</h2>
+      <button id="showAllPlayersStats" onclick="displayAllPlayersStats()">
+        Show All Players Stats
+      </button>
+
+      <!-- Dropdown for Recent Games Filter -->
+      <select id="recentGamesFilter">
+        <option value="0">Select Recent Games</option>
+        <optgroup label="Recent Games"></optgroup>
+      </select>
+
+      <table id="gameLogTable" class="table">
+        <thead>
+          <tr>
+            <th title="Game number">G</th>
+            <th title="Date of the game" class="date">Date</th>
+            <th title="Age of the player on the game date">Age</th>
+            <th title="Team">Tm</th>
+            <th title="Result of the game">Result</th>
+            <th title="Opponent team">Opp</th>
+            <th title="Games Started">GS</th>
+            <th title="Minutes Played">MP</th>
+            <th title="True Shooting Percentage">TS%</th>
+            <th title="Effective Field Goal Percentage">eFG%</th>
+            <th title="Offensive Rebound Percentage">ORB%</th>
+            <th title="Defensive Rebound Percentage">DRB%</th>
+            <th title="Total Rebound Percentage">TRB%</th>
+            <th title="Assist Percentage">AST%</th>
+            <th title="Steal Percentage">STL%</th>
+            <th title="Block Percentage">BLK%</th>
+            <th title="Turnover Percentage">TOV%</th>
+            <th title="Usage Percentage">USG%</th>
+            <th title="Offensive Rating">ORtg</th>
+            <th title="Defensive Rating">DRtg</th>
+            <th title="Game Score">GmSc</th>
+            <th title="Box Plus/Minus">BPM</th>
+          </tr>
+        </thead>
+        <tbody>
+          <!-- Game log data will be inserted dynamically -->
+        </tbody>
+      </table>
+    </div>
+
+    <script>
+      let fullGameLog = []; // Global variable to store the full game log
+      let filteredGameLog = []; // Store the filtered game log for the selected opponent
+
+      document.addEventListener("DOMContentLoaded", function () {
+        fetch("/teams")
+          .then((response) => response.json())
+          .then((teams) => populateTeamDropdown(teams))
+          .catch((error) => console.error("Error:", error));
+
+        document
+          .getElementById("teamFilter")
+          .addEventListener("change", handleTeamFilterChange);
+        document
+          .getElementById("opponentFilter")
+          .addEventListener("change", handleOpponentFilterChange);
+        document
+          .getElementById("playersByTeamTable")
+          .addEventListener("click", handlePlayerClick);
+        document
+          .getElementById("recentGamesFilter")
+          .addEventListener("change", handleRecentGamesFilterChange);
+      });
+
+      function handleTeamFilterChange() {
+        const selectedTeam = this.value;
+        fetch(`/players-by-team?team=${selectedTeam}`) // Adjust this endpoint as needed
+          .then((response) => response.json())
+          .then((data) => populatePlayersByTeamTable(data, selectedTeam))
+          .catch((error) => console.error("Error:", error));
+      }
+
+      function handleOpponentFilterChange() {
+        const selectedOpponent = this.value;
+        filteredGameLog = selectedOpponent
+          ? fullGameLog.filter((game) => game.Opp === selectedOpponent)
+          : fullGameLog;
+        displayGameLogSummary(filteredGameLog);
+        updateRecentGamesDropdown(filteredGameLog); // Update recent games dropdown based on filtered logs
+      }
+
+      function handleRecentGamesFilterChange() {
+        const selectedGamesCount = parseInt(this.value);
+        displayGameLogSummary(
+          selectedGamesCount > 0
+            ? fullGameLog.slice(-selectedGamesCount)
+            : fullGameLog
+        );
+      }
+
+      function populateTeamDropdown(teams) {
+        const teamFilter = document.getElementById("teamFilter");
+        teamFilter.innerHTML = '<option value="" selected>All Teams</option>';
+        teams.forEach((team) => {
+          const option = document.createElement("option");
+          option.value = team;
+          option.textContent = team;
+          teamFilter.appendChild(option);
+        });
+      }
+
+      function populatePlayersByTeamTable(data, selectedTeam = "") {
+        const tableBody = document
+          .getElementById("playersByTeamTable")
+          .querySelector("tbody");
+        tableBody.innerHTML = "";
+        Object.keys(data).forEach((team) => {
+          data[team].forEach((player) => {
+            if (selectedTeam === "" || team === selectedTeam) {
+              const row = document.createElement("tr");
+              row.innerHTML = `<td>${team}</td><td class="clickable">${player}</td>`;
+              tableBody.appendChild(row);
+            }
+          });
+        });
+      }
+      function handlePlayerClick(event) {
+        if (
+          event.target &&
+          event.target.nodeName === "TD" &&
+          event.target.classList.contains("clickable")
+        ) {
+          const playerName = event.target.textContent;
+          handlePlayerSelection(playerName);
+        }
+      }
+      function handleRecentGamesFilterChange() {
+        const selectedGamesCount = parseInt(this.value);
+        displayGameLogSummary(
+          selectedGamesCount > 0
+            ? filteredGameLog.slice(-selectedGamesCount)
+            : filteredGameLog
+        );
+      }
+
+      function handlePlayerSelection(playerName) {
+        fetch(`/gamelog/${playerName}`) // Adjust this endpoint as needed
+          .then((response) => response.json())
+          .then((gamelog) => {
+            fullGameLog = gamelog;
+            filteredGameLog = gamelog; // Initially, filtered logs are the same as full logs
+            populateOpponentDropdown(gamelog);
+            displayGameLogSummary(gamelog);
+            updateGameLogHeading(playerName);
+            updateRecentGamesDropdown(gamelog); // Populate recent games with full game log
+          })
+          .catch((error) => console.error("Error:", error));
+      }
+
+      function populateOpponentDropdown(gamelog) {
+        const opponentFilter = document.getElementById("opponentFilter");
+        opponentFilter.innerHTML =
+          '<option value="" selected>Select Opponent</option>';
+        let opponents = gamelog
+          .map((game) => game.Opp)
+          .filter(
+            (value, index, self) => value && self.indexOf(value) === index
+          );
+        opponents.forEach((opponent) => {
+          const option = document.createElement("option");
+          option.value = opponent;
+          option.textContent = opponent;
+          opponentFilter.appendChild(option);
+        });
+      }
+
+      function displayGameLogSummary(gamelog) {
+        const tableBody = document
+          .getElementById("gameLogTable")
+          .querySelector("tbody");
+        tableBody.innerHTML = "";
+        gamelog.forEach((game) => {
+          const row = document.createElement("tr");
+          row.className = game.G ? "" : "dnp"; // Apply 'dnp' class if game number is not present
+          row.innerHTML = `
+            <td>${game.G || "DNP"}</td>
+            <td>${game.Date || "N/A"}</td>
+            <td>${game.Age || "N/A"}</td>
+            <td>${game.Tm || "N/A"}</td>
+            <td>${game[" "] || "N/A"}</td>
+            <td>${game.Opp || "N/A"}</td>
+            <td>${game.GS || "N/A"}</td>
+            <td>${game.MP || "N/A"}</td>
+            <td>${game["TS%"] || "N/A"}</td>
+            <td>${game["eFG%"] || "N/A"}</td>
+            <td>${game["ORB%"] || "N/A"}</td>
+            <td>${game["DRB%"] || "N/A"}</td>
+            <td>${game["TRB%"] || "N/A"}</td>
+            <td>${game["AST%"] || "N/A"}</td>
+            <td>${game["STL%"] || "N/A"}</td>
+            <td>${game["BLK%"] || "N/A"}</td>
+            <td>${game["TOV%"] || "N/A"}</td>
+            <td>${game["USG%"] || "N/A"}</td>
+            <td>${game.ORtg || "N/A"}</td>
+            <td>${game.DRtg || "N/A"}</td>
+            <td>${game.GmSc || "N/A"}</td>
+            <td>${game.BPM || "N/A"}</td>
+        `;
+          tableBody.appendChild(row);
+        });
+      }
+      function updateRecentGamesDropdown(gamelog) {
+        const recentGamesDropdown =
+          document.getElementById("recentGamesFilter");
+        recentGamesDropdown.innerHTML =
+          '<option value="0">Select Recent Games</option>';
+        gamelog.forEach((_, index) => {
+          const option = document.createElement("option");
+          option.value = index + 1;
+          option.textContent = `Past ${index + 1} Game${index > 0 ? "s" : ""}`;
+          recentGamesDropdown.appendChild(option);
+        });
+      }
+      function displayAllPlayersStats() {
+        // Fetch all player data from the Flask route
+        fetch("/data")
+          .then((response) => response.json())
+          .then((allPlayersData) => {
+            const tableBody = document
+              .getElementById("gameLogTable")
+              .querySelector("tbody");
+            tableBody.innerHTML = ""; // Clear existing table data
+
+            allPlayersData.forEach((player) => {
+              // Assuming each player has a 'name' and 'gamelog_summary' property
+              const headerRow = document.createElement("tr");
+              headerRow.innerHTML = `<th colspan="22">${player.name}</th>`;
+              tableBody.appendChild(headerRow);
+
+              player.gamelog_summary.forEach((game) => {
+                const row = document.createElement("tr");
+                // Populate row with game data, similar to your existing displayGameLogSummary function
+                row.innerHTML = `
+                            <td>${game.G || "DNP"}</td>
+                            <td>${game.Date || "N/A"}</td>
+                            <td>${game.Age || "N/A"}</td>
+                            <td>${game.Tm || "N/A"}</td>
+                            <td>${game.Result || "N/A"}</td>
+                            <td>${game.Opp || "N/A"}</td>
+                            <td>${game.GS || "N/A"}</td>
+                            <td>${game.MP || "N/A"}</td>
+                            <td>${game["TS%"] || "N/A"}</td>
+                            <td>${game["eFG%"] || "N/A"}</td>
+                            <td>${game["ORB%"] || "N/A"}</td>
+                            <td>${game["DRB%"] || "N/A"}</td>
+                            <td>${game["TRB%"] || "N/A"}</td>
+                            <td>${game["AST%"] || "N/A"}</td>
+                            <td>${game["STL%"] || "N/A"}</td>
+                            <td>${game["BLK%"] || "N/A"}</td>
+                            <td>${game["TOV%"] || "N/A"}</td>
+                            <td>${game["USG%"] || "N/A"}</td>
+                            <td>${game.ORtg || "N/A"}</td>
+                            <td>${game.DRtg || "N/A"}</td>
+                            <td>${game.GmSc || "N/A"}</td>
+                            <td>${game.BPM || "N/A"}</td>
+                        `;
+                tableBody.appendChild(row);
+              });
+            });
+          })
+          .catch((error) =>
+            console.error("Error loading all players' stats:", error)
+          );
+      }
+
+      function updateGameLogHeading(playerName) {
+        const heading = document.getElementById("gamelogtabletitle-container");
+        heading.textContent = `Game Log Summary for ${playerName}`;
+      }
+      function toggleTheme() {
+        const currentTheme = document.body.getAttribute("data-theme");
+        const newTheme = currentTheme === "light" ? "dark" : "light";
+        document.body.setAttribute("data-theme", newTheme);
+        document.querySelector(".theme-toggle").textContent =
+          newTheme === "light" ? "☀️" : "🌙";
+      }
+      function toggleVisibility(elementId) {
+        const element = document.getElementById(elementId);
+        if (element) {
+          element.style.display =
+            element.style.display === "none" ? "block" : "none";
+        }
+      }
+    </script>
+  </body>
+</html>
