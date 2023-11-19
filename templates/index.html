@@ -153,14 +153,14 @@
           right: 10px;
         }
         .table-responsive {
-            overflow-x: auto;
-          }
+          overflow-x: auto;
+        }
       }
       @media only screen and (max-width: 600px) {
         /* Adjust styles for containers, tables, and other elements */
         .table-responsive {
-            overflow-x: auto;
-          }
+          overflow-x: auto;
+        }
         .container {
           width: 100%;
           margin: 0;
@@ -225,7 +225,7 @@
         outline: none;
         transition: background-color 0.3s, color 0.3s;
       }
-      #showAllPlayersStats {
+      #buttonStyle {
         padding: 10px 20px;
         background-color: var(--primary-color);
         color: var(--container-bg-color);
@@ -238,9 +238,36 @@
         transition: background-color 0.3s, color 0.3s;
       }
 
-      #showAllPlayersStats:hover {
+      #buttonStyle:hover {
         background-color: darken(var(--primary-color), 10%);
         color: var(--dnp-text-color);
+      }
+      select {
+        padding: 15px;
+        border: 2px solid #007bff; /* Match primary color */
+        border-radius: 5px;
+        margin: 10px 5px;
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1); /* Subtle shadow for depth */
+        background-color: #f8f9fa; /* Slight grey background */
+        font-size: 1rem;
+        cursor: pointer;
+      }
+
+      /* Flex Container for Filters */
+      .filters-container {
+        display: flex;
+        flex-wrap: wrap;
+        justify-content: center;
+        align-items: center;
+        gap: 10px; /* Spacing between filters */
+        margin-bottom: 20px; /* Space before the next section */
+      }
+
+      /* Adjustments for smaller screens */
+      @media screen and (max-width: 600px) {
+        .filters-container {
+          flex-direction: column;
+        }
       }
     </style>
   </head>
@@ -257,11 +284,6 @@
         <!-- Team options will be inserted dynamically -->
       </select>
 
-      <select id="opponentFilter">
-        <option value="" selected>Select Opponent</option>
-        <!-- Opponent options will be inserted dynamically -->
-      </select>
-
       <!-- Collapsible Section for Players by Team -->
       <h2 class="clickable" onclick="toggleVisibility('playersSection')">
         Toggle Players Visibility
@@ -271,26 +293,68 @@
           <thead>
             <tr>
               <th>Team</th>
-              <th>Player</th>
             </tr>
           </thead>
           <tbody>
-            <!-- Player data will be inserted dynamically -->
+            <!-- Team data will be inserted dynamically -->
           </tbody>
         </table>
       </div>
+      <div class="filters-container">
+        <!-- Dropdown for Team Filter -->
+        <select id="recentGamesFilter">
+          <option value="0">Select Recent Games</option>
+          <optgroup label="Recent Games"></optgroup>
+        </select>
+        <select id="opponentFilter">
+          <option value="" selected>Select Opponent</option>
+          <!-- Opponent options will be inserted dynamically -->
+        </select>
+        <select id="homeAwayFilter">
+          <option value="" selected>Home/Away</option>
+          <option value="">Home</option>
+          <option value="@">Away</option>
+        </select>
+
+        <!-- Dropdown for Game Started Filter -->
+        <select id="gameStartedFilter">
+          <option value="default" selected>Game Started</option>
+          <option value="Yes">Yes</option>
+          <option value="No">No</option>
+        </select>
+        <select id="winLossFilter">
+          <option value="" selected>W/L</option>
+          <option value="W">Win</option>
+          <option value="L">Loss</option>
+        </select>
+
+        <!-- Dropdown for Time Frame Filter -->
+        <select id="timeFrame">
+          <option value="default" selected>Time Frame</option>
+          <option value="Last 7 Days">Last 7 Days</option>
+          <option value="This Year">This Year</option>
+          <!-- Add more specific years as needed -->
+          <option value="2023">2023</option>
+          <option value="2022">2022</option>
+          <!-- etc. -->
+        </select>
+      </div>
 
       <!-- Table for Displaying Game Log Summary of a Selected Player -->
-      <h2 id="gamelogtabletitle-container">Game Log Summary:</h2>
-      <button id="showAllPlayersStats" onclick="displayAllPlayersStats()">
+      <h2
+        class="clickable"
+        onclick="toggleVisibility('gameLogTable'); toggleVisibility('buttonStyle')"
+        id="gamelogtabletitle-container"
+      >
+        Toggle Game Log Summary
+      </h2>
+      <button id="buttonStyle" onclick="displayAllPlayersStats()">
         Show All Players Stats
       </button>
 
+      <!-- Button to calculate averages with '22 data -->
+
       <!-- Dropdown for Recent Games Filter -->
-      <select id="recentGamesFilter">
-        <option value="0">Select Recent Games</option>
-        <optgroup label="Recent Games"></optgroup>
-      </select>
 
       <table id="gameLogTable" class="table">
         <thead>
@@ -301,6 +365,7 @@
             <th title="Team">Tm</th>
             <th title="Result of the game">Result</th>
             <th title="Opponent team">Opp</th>
+            <th title="Home/Away">L</th>
             <th title="Games Started">GS</th>
             <th title="Minutes Played">MP</th>
             <th title="True Shooting Percentage">TS%</th>
@@ -320,7 +385,79 @@
           </tr>
         </thead>
         <tbody>
-          <!-- Game log data will be inserted dynamically -->
+          <!-- Game log data with td elements having title attributes will be inserted dynamically -->
+        </tbody>
+      </table>
+      <h2 class="clickable">Current Stats Averages</h2>
+      <table id="benchmarkTableBody" class="table">
+        <thead>
+          <tr>
+            <th title="Minutes Played">MP</th>
+            <th title="True Shooting Percentage">TS%</th>
+            <th title="Effective Field Goal Percentage">eFG%</th>
+            <th title="Offensive Rebound Percentage">ORB%</th>
+            <th title="Defensive Rebound Percentage">DRB%</th>
+            <th title="Total Rebound Percentage">TRB%</th>
+            <th title="Assist Percentage">AST%</th>
+            <th title="Steal Percentage">STL%</th>
+            <th title="Block Percentage">BLK%</th>
+            <th title="Turnover Percentage">TOV%</th>
+            <th title="Usage Percentage">USG%</th>
+            <th title="Offensive Rating">ORtg</th>
+            <th title="Defensive Rating">DRtg</th>
+            <th title="Game Score">GmSc</th>
+            <th title="BPM">BPM</th>
+            <!-- The original "BPM" column -->
+            <th title="+/-">+/-</th>
+            <!-- New "+/-" column -->
+          </tr>
+        </thead>
+        <tbody>
+          <!-- Averages data will be inserted dynamically -->
+        </tbody>
+      </table>
+      <h2 class="clickable">Total Season Stats Averages</h2>
+      <table id="totalbenchmarkTable" class="table">
+        <thead>
+          <tr>
+            <th title="Minutes Played">MP</th>
+            <th title="True Shooting Percentage">TS%</th>
+            <th title="Effective Field Goal Percentage">eFG%</th>
+            <th title="Offensive Rebound Percentage">ORB%</th>
+            <th title="Defensive Rebound Percentage">DRB%</th>
+            <th title="Total Rebound Percentage">TRB%</th>
+            <th title="Assist Percentage">AST%</th>
+            <th title="Steal Percentage">STL%</th>
+            <th title="Block Percentage">BLK%</th>
+            <th title="Turnover Percentage">TOV%</th>
+            <th title="Usage Percentage">USG%</th>
+            <th title="Offensive Rating">ORtg</th>
+            <th title="Defensive Rating">DRtg</th>
+            <th title="Game Score">GmSc</th>
+            <th title="BPM">BPM</th>
+            <!-- The original "BPM" column -->
+            <th title="+/-">+/-</th>
+            <!-- New "+/-" column -->
+          </tr>
+        </thead>
+        <tbody>
+          <!-- Averages data will be inserted dynamically -->
+        </tbody>
+      </table>
+      
+      </table>
+      <button id="buttonStyle" onclick="calculateDifference()">
+        Calculate % Difference
+      </button>
+      <table id="percentageDifferenceTable" class="table">
+        <thead>
+          <tr>
+            <th>Stat</th>
+            <th>% Difference</th>
+          </tr>
+        </thead>
+        <tbody>
+          <!-- Percentage differences will be inserted dynamically here -->
         </tbody>
       </table>
     </div>
@@ -328,6 +465,11 @@
     <script>
       let fullGameLog = []; // Global variable to store the full game log
       let filteredGameLog = []; // Store the filtered game log for the selected opponent
+      let playerFilter = "";
+      let homeAwayFilter = "";
+      let winLossFilter = "";
+      let gameStartedFilter = "";
+      let timeFrameFilter = "";
 
       document.addEventListener("DOMContentLoaded", function () {
         fetch("/teams")
@@ -347,14 +489,165 @@
         document
           .getElementById("recentGamesFilter")
           .addEventListener("change", handleRecentGamesFilterChange);
+        document
+          .getElementById("homeAwayFilter")
+          .addEventListener("change", handleHomeFilter);
+        document
+          .getElementById("gameStartedFilter")
+          .addEventListener("change", gameStartedFilterHandler);
+        document
+          .getElementById("timeFrame")
+          .addEventListener("change", handleTimeFrameFilterChange);
+        document
+          .getElementById("winLossFilter")
+          .addEventListener("change", handleWinLossFilterChange);
+        document
+          .getElementById("playersByTeamTable")
+          .addEventListener("click", function (event) {
+            if (
+              event.target &&
+              event.target.nodeName === "TD" &&
+              event.target.classList.contains("clickable")
+            ) {
+            }
+          });
       });
+
+      function fetchAllPlayersData() {
+        fetch("/data")
+          .then((response) => response.json())
+          .then((allPlayersData) => {
+            displayAllPlayersStats(allPlayersData);
+          })
+          .catch((error) =>
+            console.error("Error loading all players' stats:", error)
+          );
+      }
+
+      function fetchGameLog(playerName) {
+        fetch(`/gamelog/${playerName}`)
+          .then((response) => response.json())
+          .then((gamelog) => {
+            fullGameLog = gamelog;
+            filteredGameLog = gamelog; // Initially, filtered logs are the same as full logs
+            populateOpponentDropdown(gamelog);
+            displayGameLogSummary(gamelog);
+            updateGameLogHeading(playerName);
+            updateRecentGamesDropdown(gamelog); // Populate recent games with full game log
+          })
+          .catch((error) => console.error("Error:", error));
+      }
+      function handleWinLossFilterChange() {
+        const selectedOption = document.getElementById("winLossFilter").value;
+
+        if (selectedOption === "W/L") {
+          // Show all games
+          displayGameLogSummary(filteredGameLog);
+        } else {
+          // Extract the letter (W or L) from the selected option
+          const letter = selectedOption.charAt(0);
+          console.log(letter);
+
+          // Filter the games based on whether their "Result" starts with the letter
+          const filteredGames = filteredGameLog.filter((game) => {
+            const result = game["\xa0"];
+            if (result) {
+              console.log(result);
+              return result.startsWith(letter);
+              calculateAverages();
+            }
+            return false; // Return false if the result is undefined or falsy
+          });
+
+          // Display the filtered games
+          displayGameLogSummary(filteredGames); // Use filteredGames here
+          calculateAverages();
+        }
+      }
+      function handleTimeFrameFilterChange() {
+        // Get the selected value from the Time Frame filter dropdown
+        const timeFrameFilterValue = document.getElementById("timeFrame").value;
+
+        // Check if the default option is selected
+        if (timeFrameFilterValue === "" || timeFrameFilterValue === "default") {
+          // If default option is selected, use the full game log
+          filteredGameLog = fullGameLog;
+        } else {
+          // If a specific time frame is selected, apply the filter to the data
+          filteredGameLog = fullGameLog.filter((game) => {
+            return isGameInTimeFrame(game, timeFrameFilterValue);
+          });
+        }
+
+        // Update the display with the filtered or full data
+        displayGameLogSummary(filteredGameLog);
+        calculateAverages();
+      }
+      function handleHomeFilter() {
+        // Get the selected value from the Home/Away filter dropdown
+        const homeAwayFilterValue =
+          document.getElementById("homeAwayFilter").value;
+
+        // Apply the filter to the data
+        filteredGameLog = fullGameLog.filter((game) => {
+          // Check if the game's "Home/Away" value matches the selected filter value
+          return (
+            homeAwayFilterValue === "All" ||
+            game["Home/Away"] === homeAwayFilterValue
+          );
+        });
+
+        // Update the display with the filtered data
+        displayGameLogSummary(filteredGameLog);
+        calculateAverages();
+      }
+      // Add an event listener to the Game Started filter dropdown
+      document
+        .getElementById("gameStartedFilter")
+        .addEventListener("change", gameStartedFilterHandler);
+
+      // Define the gameStartedFilterHandler function
+      function gameStartedFilterHandler() {
+        // Get the selected value from the Game Started filter dropdown
+        const gameStartedFilterValue =
+          document.getElementById("gameStartedFilter").value;
+
+        if (
+          gameStartedFilterValue === "All" ||
+          gameStartedFilterValue === "default"
+        ) {
+          // If default option is selected, use the full game log
+          filteredGameLog = fullGameLog;
+        } else {
+          // If a specific filter (Yes or No) is selected, apply the filter to the data
+          filteredGameLog = fullGameLog.filter((game) => {
+            return (
+              (gameStartedFilterValue === "Yes" && game.GS === "1") ||
+              (gameStartedFilterValue === "No" && game.GS === "0")
+            );
+          });
+        }
+
+        // Update the display with the filtered data
+        displayGameLogSummary(filteredGameLog);
+        calculateAverages();
+      }
+
+      function handleFiltersChange() {
+        homeAwayFilter = document.getElementById("homeAwayFilter").value;
+        winLossFilter = document.getElementById("winLossFilter").value;
+        gameStartedFilter = document.getElementById("gameStartedFilter").value;
+        timeFrameFilter = document.getElementById("timeFrame").value;
+        calculateAverages();
+      }
 
       function handleTeamFilterChange() {
         const selectedTeam = this.value;
         fetch(`/players-by-team?team=${selectedTeam}`) // Adjust this endpoint as needed
           .then((response) => response.json())
-          .then((data) => populatePlayersByTeamTable(data, selectedTeam))
+          .then((data) => populatePlayersByTeamTable(data))
           .catch((error) => console.error("Error:", error));
+        
       }
 
       function handleOpponentFilterChange() {
@@ -363,6 +656,7 @@
           ? fullGameLog.filter((game) => game.Opp === selectedOpponent)
           : fullGameLog;
         displayGameLogSummary(filteredGameLog);
+        calculateAverages();
         updateRecentGamesDropdown(filteredGameLog); // Update recent games dropdown based on filtered logs
       }
 
@@ -373,6 +667,7 @@
             ? fullGameLog.slice(-selectedGamesCount)
             : fullGameLog
         );
+        calculateAverages();
       }
 
       function populateTeamDropdown(teams) {
@@ -386,21 +681,21 @@
         });
       }
 
-      function populatePlayersByTeamTable(data, selectedTeam = "") {
+      function populatePlayersByTeamTable(teams) {
         const tableBody = document
           .getElementById("playersByTeamTable")
           .querySelector("tbody");
         tableBody.innerHTML = "";
-        Object.keys(data).forEach((team) => {
-          data[team].forEach((player) => {
-            if (selectedTeam === "" || team === selectedTeam) {
-              const row = document.createElement("tr");
-              row.innerHTML = `<td>${team}</td><td class="clickable">${player}</td>`;
-              tableBody.appendChild(row);
-            }
-          });
+        teams.forEach((team) => {
+          const row = document.createElement("tr");
+          const teamCell = document.createElement("td");
+          teamCell.classList.add("clickable");
+          teamCell.textContent = team;
+          row.appendChild(teamCell);
+          tableBody.appendChild(row);
         });
       }
+
       function handlePlayerClick(event) {
         if (
           event.target &&
@@ -409,6 +704,7 @@
         ) {
           const playerName = event.target.textContent;
           handlePlayerSelection(playerName);
+          calculateAverages();
         }
       }
       function handleRecentGamesFilterChange() {
@@ -418,6 +714,7 @@
             ? filteredGameLog.slice(-selectedGamesCount)
             : filteredGameLog
         );
+        calculateAverages();
       }
 
       function handlePlayerSelection(playerName) {
@@ -426,13 +723,98 @@
           .then((gamelog) => {
             fullGameLog = gamelog;
             filteredGameLog = gamelog; // Initially, filtered logs are the same as full logs
+            
             populateOpponentDropdown(gamelog);
             displayGameLogSummary(gamelog);
             updateGameLogHeading(playerName);
-            updateRecentGamesDropdown(gamelog); // Populate recent games with full game log
+            updateRecentGamesDropdown(gamelog);
+            calculateAverages(); // Calculate averages when player is selected
+            calculateTotalSeasonAverages(playerName);
+            calculate22SeasonAverages(playerName);
+            
           })
           .catch((error) => console.error("Error:", error));
       }
+
+      function calculateDifference() {
+        const currentStatsRows = document.querySelector("#benchmarkTableBody tbody").querySelectorAll("tr");
+        const totalSeasonStatsRows = document.querySelector("#totalbenchmarkTable tbody").querySelectorAll("tr");
+        const percentageDifferenceBody = document.querySelector("#percentageDifferenceTable tbody");
+    
+        // Clear previous entries
+        percentageDifferenceBody.innerHTML = "";
+    
+        // Assuming the first row of both tables contain the average values for comparison
+        const currentStatsCells = currentStatsRows[0].querySelectorAll("td");
+        const totalSeasonStatsCells = totalSeasonStatsRows[0].querySelectorAll("td");
+    
+        // Ensure that both rows have the same number of cells
+        if (currentStatsCells.length === totalSeasonStatsCells.length) {
+            for (let i = 0; i < currentStatsCells.length; i++) {
+                // Parse the numeric values from the table cells
+                const currentValue = parseFloat(currentStatsCells[i].textContent) || 0;
+                const totalValue = parseFloat(totalSeasonStatsCells[i].textContent) || 0;
+    
+                // Calculate the percentage difference
+                let percentageDifference = 0;
+                if (totalValue !== 0) {
+                    percentageDifference = ((currentValue - totalValue) / totalValue) * 100;
+                }
+    
+                // Create a new row for the percentage difference
+                const row = document.createElement("tr");
+                const statNameCell = document.createElement("td");
+                const percentageDifferenceCell = document.createElement("td");
+    
+                // Get the stat name from the header column
+                statNameCell.textContent = document.querySelector("#benchmarkTableBody thead").querySelectorAll("th")[i].textContent;
+    
+                // Format the percentage difference
+                percentageDifferenceCell.textContent = isFinite(percentageDifference) ? `${percentageDifference.toFixed(2)}%` : "N/A";
+    
+                // Append the cells to the row
+                row.appendChild(statNameCell);
+                row.appendChild(percentageDifferenceCell);
+    
+                // Append the row to the table body
+                percentageDifferenceBody.appendChild(row);
+            }
+        } else {
+            console.error("The tables do not have the same number of columns.");
+        }
+    }
+    
+    
+          
+    
+    
+    
+      function filterPlayersByTeam(selectedTeam) {
+        if (selectedTeam === "All Teams") {
+          // If "All Teams" is selected, display all players
+          fetchAllPlayersData();
+        } else {
+          // Fetch and display players based on the selected team
+          fetch(`/players-by-team?team=${selectedTeam}`)
+            .then((response) => response.json())
+            .then((playersByTeamData) => {
+              displayAllPlayersStats(playersByTeamData);
+            })
+            .catch((error) =>
+              console.error("Error loading players by team:", error)
+            );
+        }
+      }
+      document
+        .getElementById("teamFilter")
+        .addEventListener("change", function () {
+          const selectedTeam = this.value;
+          filterPlayersByTeam(selectedTeam);
+          
+        });
+
+      // Initial data loading
+      fetchAllPlayersData();
 
       function populateOpponentDropdown(gamelog) {
         const opponentFilter = document.getElementById("opponentFilter");
@@ -458,14 +840,20 @@
         tableBody.innerHTML = "";
         gamelog.forEach((game) => {
           const row = document.createElement("tr");
-          row.className = game.G ? "" : "dnp"; // Apply 'dnp' class if game number is not present
+
+          // Determine if the player did not play and add the 'dnp' class to the row
+          if (game["G"] === "DNP" || game.MP === "0" || game.MP === "N/A") {
+            row.classList.add("dnp"); // This will apply the red background style
+          }
+
           row.innerHTML = `
-            <td>${game.G || "DNP"}</td>
+            <td>${game["G"] || "N/A"}</td>
             <td>${game.Date || "N/A"}</td>
             <td>${game.Age || "N/A"}</td>
             <td>${game.Tm || "N/A"}</td>
-            <td>${game[" "] || "N/A"}</td>
+            <td>${game["\xa0"] || "N/A"}</td>
             <td>${game.Opp || "N/A"}</td>
+            <td>${game["Home/Away"] || "HOME"}</td>
             <td>${game.GS || "N/A"}</td>
             <td>${game.MP || "N/A"}</td>
             <td>${game["TS%"] || "N/A"}</td>
@@ -482,7 +870,7 @@
             <td>${game.DRtg || "N/A"}</td>
             <td>${game.GmSc || "N/A"}</td>
             <td>${game.BPM || "N/A"}</td>
-        `;
+          `;
           tableBody.appendChild(row);
         });
       }
@@ -496,6 +884,49 @@
           option.value = index + 1;
           option.textContent = `Past ${index + 1} Game${index > 0 ? "s" : ""}`;
           recentGamesDropdown.appendChild(option);
+        });
+      }
+      function displayAllPlayersStats(allPlayersData) {
+        const tableBody = document
+          .getElementById("gameLogTable")
+          .querySelector("tbody");
+        tableBody.innerHTML = ""; // Clear existing table data
+
+        allPlayersData.forEach((player) => {
+          // Assuming each player has a 'name' and 'gamelog_summary' property
+          const headerRow = document.createElement("tr");
+          headerRow.innerHTML = `<th colspan="22">${player.name}</th>`;
+          tableBody.appendChild(headerRow);
+
+          player.gamelog_summary.forEach((game) => {
+            const row = document.createElement("tr");
+            // Populate row with game data, similar to your existing displayGameLogSummary function
+            row.innerHTML = `
+                      <td>${game["G"] || "DNP"}</td>
+                      <td>${game.Date || "N/A"}</td>
+                      <td>${game.Age || "N/A"}</td>
+                      <td>${game.Tm || "N/A"}</td>
+                      <td>${game.Result || "N/A"}</td>
+                      <td>${game.Opp || "N/A"}</td>
+                      <td>${game.GS || "N/A"}</td>
+                      <td>${game.MP || "N/A"}</td>
+                      <td>${game["TS%"] || "N/A"}</td>
+                      <td>${game["eFG%"] || "N/A"}</td>
+                      <td>${game["ORB%"] || "N/A"}</td>
+                      <td>${game["DRB%"] || "N/A"}</td>
+                      <td>${game["TRB%"] || "N/A"}</td>
+                      <td>${game["AST%"] || "N/A"}</td>
+                      <td>${game["STL%"] || "N/A"}</td>
+                      <td>${game["BLK%"] || "N/A"}</td>
+                      <td>${game["TOV%"] || "N/A"}</td>
+                      <td>${game["USG%"] || "N/A"}</td>
+                      <td>${game.ORtg || "N/A"}</td>
+                      <td>${game.DRtg || "N/A"}</td>
+                      <td>${game.GmSc || "N/A"}</td>
+                      <td>${game.BPM || "N/A"}</td>
+                  `;
+            tableBody.appendChild(row);
+          });
         });
       }
       function displayAllPlayersStats() {
@@ -518,29 +949,29 @@
                 const row = document.createElement("tr");
                 // Populate row with game data, similar to your existing displayGameLogSummary function
                 row.innerHTML = `
-                            <td>${game.G || "DNP"}</td>
-                            <td>${game.Date || "N/A"}</td>
-                            <td>${game.Age || "N/A"}</td>
-                            <td>${game.Tm || "N/A"}</td>
-                            <td>${game.Result || "N/A"}</td>
-                            <td>${game.Opp || "N/A"}</td>
-                            <td>${game.GS || "N/A"}</td>
-                            <td>${game.MP || "N/A"}</td>
-                            <td>${game["TS%"] || "N/A"}</td>
-                            <td>${game["eFG%"] || "N/A"}</td>
-                            <td>${game["ORB%"] || "N/A"}</td>
-                            <td>${game["DRB%"] || "N/A"}</td>
-                            <td>${game["TRB%"] || "N/A"}</td>
-                            <td>${game["AST%"] || "N/A"}</td>
-                            <td>${game["STL%"] || "N/A"}</td>
-                            <td>${game["BLK%"] || "N/A"}</td>
-                            <td>${game["TOV%"] || "N/A"}</td>
-                            <td>${game["USG%"] || "N/A"}</td>
-                            <td>${game.ORtg || "N/A"}</td>
-                            <td>${game.DRtg || "N/A"}</td>
-                            <td>${game.GmSc || "N/A"}</td>
-                            <td>${game.BPM || "N/A"}</td>
-                        `;
+                              <td>${game["G"] || "DNP"}</td>
+                              <td>${game.Date || "N/A"}</td>
+                              <td>${game.Age || "N/A"}</td>
+                              <td>${game.Tm || "N/A"}</td>
+                              <td>${game.Result || "N/A"}</td>
+                              <td>${game.Opp || "N/A"}</td>
+                              <td>${game.GS || "N/A"}</td>
+                              <td>${game.MP || "N/A"}</td>
+                              <td>${game["TS%"] || "N/A"}</td>
+                              <td>${game["eFG%"] || "N/A"}</td>
+                              <td>${game["ORB%"] || "N/A"}</td>
+                              <td>${game["DRB%"] || "N/A"}</td>
+                              <td>${game["TRB%"] || "N/A"}</td>
+                              <td>${game["AST%"] || "N/A"}</td>
+                              <td>${game["STL%"] || "N/A"}</td>
+                              <td>${game["BLK%"] || "N/A"}</td>
+                              <td>${game["TOV%"] || "N/A"}</td>
+                              <td>${game["USG%"] || "N/A"}</td>
+                              <td>${game.ORtg || "N/A"}</td>
+                              <td>${game.DRtg || "N/A"}</td>
+                              <td>${game.GmSc || "N/A"}</td>
+                              <td>${game.BPM || "N/A"}</td>
+                          `;
                 tableBody.appendChild(row);
               });
             });
@@ -549,11 +980,299 @@
             console.error("Error loading all players' stats:", error)
           );
       }
-
       function updateGameLogHeading(playerName) {
         const heading = document.getElementById("gamelogtabletitle-container");
-        heading.textContent = `Game Log Summary for ${playerName}`;
+        heading.textContent = ` Toggle Game Log Summary for ${playerName}`;
       }
+      function calculateTotalSeasonAverages(playerName) {
+        // Fetch the entire gamelog data for the specific player without applying filters
+        fetch(`/gamelog/${playerName}`)
+          .then((response) => response.json())
+          .then((data) => {
+            if (data.length > 0) {
+              // Initialize sums and counts for each stat
+              const statSums = {};
+              const statCounts = {};
+
+              // Define the statistics to average
+              const statisticsToAverage = [
+                "MP",
+                "TS%",
+                "eFG%",
+                "ORB%",
+                "DRB%",
+                "TRB%",
+                "AST%",
+                "STL%",
+                "BLK%",
+                "TOV%",
+                "USG%",
+                "ORtg",
+                "DRtg",
+                "GmSc",
+                "BPM",
+                "\xa0",
+              ];
+
+              // Loop through the gamelog data and calculate sums and counts
+              data.forEach((game) => {
+                statisticsToAverage.forEach((stat) => {
+                  // Check if the stat is "+/-" and if it's available in the game object
+                  if (stat === "+/-" && game[stat]) {
+                    // Use a regular expression to extract the number between parentheses
+                    const plusMinusMatch = game[stat].match(/\(([-\d]+)\)/);
+                    if (plusMinusMatch && plusMinusMatch[1]) {
+                      const plusMinusValue = parseInt(plusMinusMatch[1], 10);
+                      if (!isNaN(plusMinusValue)) {
+                        statSums[stat] = (statSums[stat] || 0) + plusMinusValue;
+                        statCounts[stat] = (statCounts[stat] || 0) + 1;
+                      }
+                    }
+                  } else {
+                    // Handle other stats as usual
+                    const value = parseFloat(game[stat]);
+                    if (!isNaN(value)) {
+                      statSums[stat] = (statSums[stat] || 0) + value;
+                      statCounts[stat] = (statCounts[stat] || 0) + 1;
+                    }
+                  }
+                });
+              });
+
+              // Prepare the row for the averages
+              const benchmarkTableBody = document.querySelector(
+                "#totalbenchmarkTable tbody"
+              );
+              benchmarkTableBody.innerHTML = "";
+              const newRow = document.createElement("tr");
+
+              statisticsToAverage.forEach((stat) => {
+                const averageValue =
+                  statCounts[stat] > 0
+                    ? statSums[stat] / statCounts[stat]
+                    : "N/A";
+                const averageText =
+                  averageValue !== "N/A"
+                    ? averageValue.toFixed(2)
+                    : averageValue;
+                const cell = document.createElement("td");
+                cell.textContent = averageText;
+                newRow.appendChild(cell);
+              });
+
+              benchmarkTableBody.appendChild(newRow);
+            }
+          })
+          .catch((error) => {
+            console.error("Error fetching gamelog data: " + error);
+          });
+      }
+
+      
+      function calculateAverages() {
+        const percentageColumns = new Set([
+          "TS%",
+          "eFG%",
+          "ORB%",
+          "DRB%",
+          "TRB%",
+          "AST%",
+          "STL%",
+          "BLK%",
+          "TOV%",
+          "USG%",
+        ]);
+        const columnsToAverage = [
+          "MP",
+          "TS%",
+          "eFG%",
+          "ORB%",
+          "DRB%",
+          "TRB%",
+          "AST%",
+          "STL%",
+          "BLK%",
+          "TOV%",
+          "USG%",
+          "ORtg",
+          "DRtg",
+          "GmSc",
+          "BPM",
+          
+        ];
+
+        const columnSums = {};
+        const columnCounts = {};
+        let totalResultPlusMinus = 0;
+        let countResultPlusMinus = 0;
+
+        const gameLogTableBody = document.querySelector("#gameLogTable tbody");
+        const rows = gameLogTableBody.querySelectorAll("tr");
+
+        rows.forEach((row) => {
+          const cells = row.querySelectorAll("td");
+
+          // Skip rows without numeric game statistics
+          if (
+            cells[7].textContent === "Inactive" ||
+            cells[7].textContent === "N/A"
+          )
+            return;
+
+          columnsToAverage.forEach((stat, index) => {
+            const cellValue = cells[index + 8].textContent; // Index offset to match the 'MP' column in the table
+            if (cellValue !== "N/A" && cellValue !== "Inactive") {
+              let value = parseFloat(cellValue.replace(/,/g, ""));
+              if (!isNaN(value)) {
+                columnSums[stat] = (columnSums[stat] || 0) + value;
+                columnCounts[stat] = (columnCounts[stat] || 0) + 1;
+              }
+            }
+          });
+
+          // Calculate the Result +/- average
+          const resultText = cells[4].textContent;
+          const plusMinusMatch = resultText.match(/[WL]\s\(([-+]\d+)\)/);
+          if (plusMinusMatch) {
+            totalResultPlusMinus += parseInt(plusMinusMatch[1], 10);
+            countResultPlusMinus++;
+          }
+        });
+
+        // Prepare the row for the averages
+        const benchmarkTableBody = document.querySelector(
+          "#benchmarkTableBody tbody"
+        );
+        benchmarkTableBody.innerHTML = "";
+        const newRow = document.createElement("tr");
+
+        columnsToAverage.forEach((stat) => {
+          const averageValue =
+            columnCounts[stat] > 0
+              ? columnSums[stat] / columnCounts[stat]
+              : "N/A";
+          const averageText =
+            averageValue !== "N/A" ? averageValue.toFixed(2) : averageValue;
+          const cell = document.createElement("td");
+          cell.textContent = percentageColumns.has(stat)
+            ? averageText + "%"
+            : averageText;
+          newRow.appendChild(cell);
+        });
+
+        // Append the +/- average to the row
+        const plusMinusAverage =
+          countResultPlusMinus > 0
+            ? (totalResultPlusMinus / countResultPlusMinus).toFixed(2)
+            : "N/A";
+        const plusMinusCell = document.createElement("td");
+        plusMinusCell.textContent = plusMinusAverage;
+        newRow.appendChild(plusMinusCell);
+
+        benchmarkTableBody.appendChild(newRow);
+      }
+
+      function calculate22SeasonAverages(playerName) {
+        // Fetch the entire gamelog data for the specific player without applying filters
+        fetch(`/getgame/${playerName}`)
+          .then((response) => response.json())
+          .then((data) => {
+            if (data.length > 0) {
+              // Initialize sums and counts for each stat
+              const statSums = {};
+              const statCounts = {};
+
+              // Define the statistics to average
+              const statisticsToAverage = [
+                "MP",
+                "TS%",
+                "eFG%",
+                "ORB%",
+                "DRB%",
+                "TRB%",
+                "AST%",
+                "STL%",
+                "BLK%",
+                "TOV%",
+                "USG%",
+                "ORtg",
+                "DRtg",
+                "GmSc",
+                "BPM",
+                "\xa0",
+              ];
+
+              // Loop through the gamelog data and calculate sums and counts
+              data.forEach((game) => {
+                statisticsToAverage.forEach((stat) => {
+                  const value = parseFloat(game[stat]);
+                  if (!isNaN(value)) {
+                    statSums[stat] = (statSums[stat] || 0) + value;
+                    statCounts[stat] = (statCounts[stat] || 0) + 1;
+                  }
+                });
+              });
+
+              // Prepare the row for the averages
+              const benchmarkTableBody = document.querySelector(
+                "#oldbenchmarkTable tbody"
+              );
+              benchmarkTableBody.innerHTML = "";
+              const newRow = document.createElement("tr");
+
+              statisticsToAverage.forEach((stat) => {
+                const averageValue =
+                  statCounts[stat] > 0
+                    ? statSums[stat] / statCounts[stat]
+                    : "N/A";
+                const averageText =
+                  averageValue !== "N/A"
+                    ? averageValue.toFixed(2)
+                    : averageValue;
+                const cell = document.createElement("td");
+                cell.textContent = averageText;
+                newRow.appendChild(cell);
+              });
+
+              benchmarkTableBody.appendChild(newRow);
+            }
+          })
+          .catch((error) => {
+            console.error("Error fetching gamelog data: " + error);
+          });
+      }
+
+      function isGameInTimeFrame(game, timeFrame) {
+        // Parse the game date as a JavaScript Date object
+        const gameDate = new Date(game.Date);
+
+        // Get the current date for comparison
+        const currentDate = new Date();
+
+        if (timeFrame === "Last 7 Days") {
+          // Create a date that is 7 days prior to the current date
+          const date7DaysAgo = new Date();
+          date7DaysAgo.setDate(currentDate.getDate() - 7);
+
+          // Check if the game date is between now and 7 days ago
+          return gameDate >= date7DaysAgo && gameDate <= currentDate;
+        } else if (timeFrame === "Last 30 Days") {
+          // Create a date that is 30 days prior to the current date
+          const date30DaysAgo = new Date();
+          date30DaysAgo.setDate(currentDate.getDate() - 30);
+
+          // Check if the game date is between now and 30 days ago
+          return gameDate >= date30DaysAgo && gameDate <= currentDate;
+        } else if (timeFrame === "This Year") {
+          // Check if the game date is within the current year
+          return gameDate.getFullYear() === currentDate.getFullYear();
+        } else {
+          // If the timeFrame is a specific year, compare it to the game's year
+          const year = parseInt(timeFrame);
+          return gameDate.getFullYear() === year;
+        }
+      }
+
       function toggleTheme() {
         const currentTheme = document.body.getAttribute("data-theme");
         const newTheme = currentTheme === "light" ? "dark" : "light";
